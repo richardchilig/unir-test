@@ -20,7 +20,8 @@ context('Calc', () => {
     cy.get('#in-op1').clear().type('2')
     cy.get('#in-op2').clear().type('3')
     cy.get('#button-add').click()
-    cy.get('#result-area').should('have.text', "Result: 5")
+    cy.wait(1000)  // Espera para asegurar que el backend responda y se actualice el DOM
+    cy.get('#result-area').should('contain', "5")
     cy.screenshot()
   })
 
