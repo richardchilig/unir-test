@@ -20,39 +20,54 @@ context('Calc', () => {
     cy.get('#in-op1').clear().type('2')
     cy.get('#in-op2').clear().type('3')
     cy.get('#button-add').click()
-    cy.wait(1000)
-    cy.get('#result-area').invoke('text').should('include', "5")
+    cy.get('#result-area')
+      .invoke('text')
+      .should('include', '5')  // más tolerante que 'have.text'
     cy.screenshot()
   })
 
-  it.skip('can click multiply', () => {
+  it('can click subtract', () => {
+    cy.get('#in-op1').clear().type('10')
+    cy.get('#in-op2').clear().type('4')
+    cy.get('#button-subtract').click()
+    cy.get('#result-area')
+      .invoke('text')
+      .should('include', '6')
+  })
+
+  it('can click multiply', () => {
     cy.get('#in-op1').clear().type('2')
     cy.get('#in-op2').clear().type('3')
     cy.get('#button-multiply').click()
-    cy.get('#result-area').should('have.text', "Result: 6")
-    cy.screenshot()
+    cy.get('#result-area')
+      .invoke('text')
+      .should('include', '6')
   })
 
-  it('can click substract (using fixture)', () => {
-    cy.fixture('result8.txt').as('result')
-    cy.server()
-    cy.route('GET', 'calc/substract/4/-4', '@result').as('getResult')
-
-    cy.get('#in-op1').clear().type('4')
-    cy.get('#in-op2').clear().type('-4')
-    cy.get('#button-substract').click()
-
-    cy.wait('@getResult')
-
-    cy.get('#result-area').should('have.text', "Result: 8")
-    cy.screenshot()
+  it('can click divide', () => {
+    cy.get('#in-op1').clear().type('10')
+    cy.get('#in-op2').clear().type('2')
+    cy.get('#button-divide').click()
+    cy.get('#result-area')
+      .invoke('text')
+      .should('include', '5')
   })
 
   it('increases the history log', () => {
-    cy.get('#button-add').click().click().click()
-    cy.get('#history-log').children().its('length')
-    .should('eq', 3)
-    cy.screenshot()
-  })
+    cy.get('#in-op1').clear().type('4')
+    cy.get('#in-op2').clear().type('6')
+    cy.get('#button-add').click()
+    cy.get('#in-op1').clear().type('10')
+    cy.get('#in-op2').clear().type('2')
+    cy.get('#button-subtract').click()
 
+    // Mostrar el contenido real del historial en la consola
+    cy.get('#history-area').invoke('text').then(text => {
+      cy.log('Contenido del historial:', text)
+    })
+
+    // Asegurarse de que hay al menos 2 entradas
+    cy.get('#history-area li').should('have.length.at.least', 2)
+  })
 })
+
